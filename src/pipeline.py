@@ -279,12 +279,12 @@ class PySparkPipeline:
                     hiring_trends: DataFrame,
                     login_patterns: DataFrame,
                     output_path: str) -> None:
-        """Save all processed outputs to Avro format."""
+        """Save all processed outputs to Parquet format."""
         try:
             # Create output directory
             os.makedirs(output_path, exist_ok=True)
             
-            # Save each DataFrame to Avro
+            # Save each DataFrame to Parquet
             outputs = [
                 (dept_agg, "department_aggregations"),
                 (skill_stats, "skill_statistics"),
@@ -297,12 +297,12 @@ class PySparkPipeline:
             ]
             
             for df, name in outputs:
-                avro_path = os.path.join(output_path, f"{name}.avro")
-                df.write.format("avro").mode("overwrite").save(avro_path)
-                print(f"Saved {name} to {avro_path}")
-            
+                parquet_path = os.path.join(output_path, f"{name}.parquet")
+                df.write.mode("overwrite").parquet(parquet_path)
+                print(f"Saved {name} to {parquet_path}")
+                
             self.log_journal("save_outputs", "success", {
-                "output_files": len(outputs),
+                "total_outputs": len(outputs),
                 "output_path": output_path
             })
             
